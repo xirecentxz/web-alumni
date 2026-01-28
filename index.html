@@ -8,34 +8,43 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-50">
 
-    <nav class="navbar-custom">
+    <nav class="navbar">
         <div class="logo">ALUMNI<span>SMA</span></div>
         <div class="nav-links">
-            <button onclick="changePage('Database', this)" class="nav-btn active-link">Alumni</button>
+            <button onclick="showHome()" class="nav-btn" id="btn-home">Beranda</button>
+            <button onclick="changePage('Database', this)" class="nav-btn">Alumni</button>
             <button onclick="changePage('Loker', this)" class="nav-btn">Karir</button>
             <button onclick="changePage('Berita', this)" class="nav-btn">Berita</button>
             <button onclick="changePage('Etalase', this)" class="nav-btn">Etalase</button>
         </div>
-        <button class="btn-primary">Daftar</button>
+        <button class="btn-register">Daftar</button>
     </nav>
 
-    <main class="container-main">
-        <h2 id="page-title" class="title-section">Direktori Alumni</h2>
-        
-        <div id="main-content" class="grid-layout">
-            <div class="loader-container">
-                <div class="loader"></div>
-                <p>Sinkronisasi data...</p>
+    <div id="landing-page">
+        <header class="hero">
+            <div class="hero-content">
+                <h1>Selamat Datang Kembali, <span class="text-blue-400">Alumni!</span></h1>
+                <p>Tempat bernostalgia, mencari kabar teman lama, dan membangun jaringan profesional.</p>
+                <div class="hero-btns">
+                    <button onclick="changePage('Database')" class="btn-main">Cari Teman Sekarang</button>
+                    <button onclick="changePage('Loker')" class="btn-sub">Lihat Lowongan Kerja</button>
+                </div>
             </div>
-        </div>
-    </main>
+        </header>
 
-    <footer class="footer-custom">
-        <p>&copy; 2026 Ikatan Alumni SMA Negeri 1 Surabaya. Dikelola oleh Tim IT Alumni.</p>
-    </footer>
+        <section class="py-16 max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-end mb-8">
+                <h2 class="text-2xl font-bold">Kabar Terbaru</h2>
+                <button onclick="changePage('Berita')" class="text-blue-600 font-semibold">Lihat Semua Berita &rarr;</button>
+            </div>
+            <div id="news-highlight" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <p class="col-span-3 text-center text-gray-400">Memuat berita terbaru...</p>
+            </div>
+        </section>
+    </div>
 
-    <script src="script.js"></script>
-</body>
-</html>
+    <main id="data-page" class="hidden py-12 max-w-6xl mx-auto px-4">
+        <h2 id="page-title" class="text-3xl font-bold text-center mb-10"></h2>
+        <div id="main-content" class="grid grid-cols-1 sm:grid-
