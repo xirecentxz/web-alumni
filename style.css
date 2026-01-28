@@ -52,3 +52,44 @@ body { font-family: 'Poppins', sans-serif; transition: background-color 0.3s eas
 
 .loader { border: 3px solid #f3f3f3; border-top: 3px solid #1d4ed8; border-radius: 50%; width: 30px; height: 30px; animation: spin 0.8s linear infinite; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* style.css - Modern Dark Footer */
+.footer {
+    background: #0f172a; /* Warna Biru Navy Gelap 2026 */
+    color: #94a3b8;
+    padding: 4rem 5% 2rem;
+    margin-top: 5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+    .footer-content { grid-template-columns: 2fr 1fr 1fr; }
+}
+
+.footer-logo { font-size: 1.5rem; font-weight: 800; color: white; margin-bottom: 1rem; }
+.footer-logo span { color: #3b82f6; }
+
+.footer-text { font-size: 0.875rem; line-height: 1.6; max-width: 300px; }
+
+.footer-heading { color: white; font-weight: 700; font-size: 1rem; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+.footer-links { list-style: none; padding: 0; }
+.footer-links li { margin-bottom: 0.75rem; }
+.footer-links a { font-size: 0.875rem; transition: color 0.3s ease; }
+.footer-links a:hover { color: #3b82f6; }
+
+.footer-bottom {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+    font-size: 0.75rem;
+}
