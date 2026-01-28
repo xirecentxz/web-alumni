@@ -37,14 +37,27 @@
         <section class="py-16 max-w-6xl mx-auto px-4">
             <div class="flex justify-between items-end mb-8">
                 <h2 class="text-2xl font-bold">Kabar Terbaru</h2>
-                <button onclick="changePage('Berita')" class="text-blue-600 font-semibold">Lihat Semua Berita &rarr;</button>
+                <button onclick="changePage('Berita')" class="text-blue-600 font-semibold text-sm">Lihat Semua &rarr;</button>
             </div>
             <div id="news-highlight" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <p class="col-span-3 text-center text-gray-400">Memuat berita terbaru...</p>
+                <div class="col-span-full text-center py-10">
+                    <div class="loader mx-auto"></div>
+                    <p class="text-gray-400 mt-2 text-sm">Menyinkronkan berita...</p>
+                </div>
             </div>
         </section>
     </div>
 
     <main id="data-page" class="hidden py-12 max-w-6xl mx-auto px-4">
-        <h2 id="page-title" class="text-3xl font-bold text-center mb-10"></h2>
-        <div id="main-content" class="grid grid-cols-1 sm:grid-
+        <h2 id="page-title" class="text-3xl font-bold text-center mb-10 text-gray-900"></h2>
+        <div id="main-content" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 Ikatan Alumni SMA Negeri 1. Terhubung dan Berbagi.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
