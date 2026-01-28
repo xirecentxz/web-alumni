@@ -1,23 +1,40 @@
-/* script.js - Smart Navigation Logic 2026 */
 const webAppUrl = "https://script.google.com/macros/s/AKfycbxvlmlJ512BbiA9v5256n4JJVJwWHPl4CJL7vQIMU2dclfX4LxNYsww-EJfSoR77HkZ/exec";
 
-// Fungsi untuk kembali ke Beranda (Landing Page)
+// 1. Fungsi Kembali ke Beranda (Landing Page)
 function showHome() {
-    toggleVisibility('home');
-    updateActiveBtn('btn-home');
+    // Sembunyikan halaman data, tampilkan landing page
+    const landing = document.getElementById('landing-page');
+    const dataPage = document.getElementById('data-page');
+    
+    if (landing) landing.style.display = 'block';
+    if (dataPage) dataPage.style.display = 'none';
+    
+    // Update visual tombol aktif
+    updateActiveNav('btn-home');
+    
+    // Muat cuplikan berita tanpa menunggu (async)
     loadNewsHighlight();
 }
 
-// Fungsi pindah halaman data
+// 2. Fungsi Pindah Halaman Data (Alumni, Karir, dll)
 async function changePage(sheetName, element) {
-    toggleVisibility('data');
-    updateActiveBtn(element);
+    // Sembunyikan landing page, tampilkan halaman data
+    const landing = document.getElementById('landing-page');
+    const dataPage = document.getElementById('data-page');
     
-    const title = document.getElementById('page-title');
-    title.innerText = sheetName === 'Database' ? 'Direktori Alumni' : 'Portal ' + sheetName;
+    if (landing) landing.style.display = 'none';
+    if (dataPage) dataPage.style.display = 'block';
+
+    // Update Judul & Navigasi
+    document.getElementById('page-title').innerText = sheetName === 'Database' ? 'Direktori Alumni' : 'Portal ' + sheetName;
+    updateActiveNav(element);
 
     const container = document.getElementById('main-content');
-    container.innerHTML = '<div class="col-span-full py-20 flex flex-col items-center"><div class="loader"></div><p class="mt-4 text-gray-400 font-medium">Sinkronisasi Database...</p></div>';
+    container.innerHTML = `
+        <div class="col-span-full py-20 text-center">
+            <div class="loader mx-auto"></div>
+            <p class="mt-4 text-gray-500 font-medium">Mengambil data dari ${sheetName}...</p>
+        </div>`;
 
     try {
         const response = await fetch(`${webAppUrl}?page=${sheetName}`, { redirect: "follow" });
@@ -25,7 +42,7 @@ async function changePage(sheetName, element) {
         container.innerHTML = '';
 
         if (!data || data.length === 0 || data.error) {
-            container.innerHTML = `<p class="col-span-full text-center py-20 text-gray-400">Data ${sheetName} belum tersedia.</p>`;
+            container.innerHTML = `<p class="col-span-full text-center py-20 text-gray-400 italic">Data ${sheetName} belum tersedia di Spreadsheet.</p>`;
             return;
         }
 
@@ -36,55 +53,62 @@ async function changePage(sheetName, element) {
             else if (sheetName === 'Etalase') container.innerHTML += renderEtalase(item);
         });
     } catch (e) {
-        container.innerHTML = '<p class="col-span-full text-center text-red-500 py-20 font-bold">⚠️ Koneksi terputus. Silakan refresh halaman.</p>';
+        container.innerHTML = '<p class="col-span-full text-center text-red-500 py-20 font-bold">⚠️ Gagal terhubung ke database. Silakan coba lagi.</p>';
     }
 }
 
-// Helper: Mengatur tampilan section
-function toggleVisibility(mode) {
-    const landing = document.getElementById('landing-page');
-    const dataPage = document.getElementById('data-page');
+// 3. Helper: Indikator Halaman Aktif (Modern Look)
+function updateActiveNav(target) {
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.style.color = "#6b7280";
+        btn.style.background = "transparent";
+    });
+
+    const activeBtn = (typeof target === 'string') ? document.getElementById(target) : target;
     
-    if (mode === 'home') {
-        landing.style.display = 'block';
-        dataPage.style.display = 'none';
-    } else {
-        landing.style.display = 'none';
-        dataPage.style.display = 'block';
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+        activeBtn.style.color = "#1d4ed8";
+        activeBtn.style.background = "#eff6ff";
+        activeBtn.style.borderRadius = "12px";
     }
 }
 
-// Helper: Indikator tombol aktif
-function updateActiveBtn(target) {
-    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-    
-    if (typeof target === 'string') {
-        document.getElementById(target).classList.add('active');
-    } else {
-        target.classList.add('active');
+// 4. Highlight Berita (Halaman Depan)
+async function loadNewsHighlight() {
+    const container = document.getElementById('news-highlight');
+    if (!container) return;
+
+    try {
+        const response = await fetch(`${webAppUrl}?page=Berita`, { redirect: "follow" });
+        const data = await response.json();
+        
+        if (data && data.length > 0 && !data.error) {
+            container.innerHTML = '';
+            data.slice(0, 3).forEach(item => {
+                container.innerHTML += `
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all cursor-pointer" onclick="changePage('Berita')">
+                        <img src="${item.LinkGambar || 'https://via.placeholder.com/400x200'}" class="w-full h-44 object-cover">
+                        <div class="p-5">
+                            <p class="text-blue-600 text-[10px] font-bold uppercase tracking-widest mb-2">${item.Tanggal || ''}</p>
+                            <h3 class="font-bold text-gray-900 leading-tight">${item.Judul || 'Kabar Alumni'}</h3>
+                        </div>
+                    </div>`;
+            });
+        } else {
+            container.innerHTML = '<p class="col-span-3 text-center text-gray-400 py-10">Belum ada berita terbaru.</p>';
+        }
+    } catch (e) {
+        container.innerHTML = '<p class="col-span-3 text-center text-gray-400 py-10">Gagal memuat cuplikan berita.</p>';
     }
 }
 
-// RENDER TEMPLATES (Clean & Modern Design)
-function renderAlumni(d) {
-    return `
-    <div class="alumni-card">
-        <img src="${d['Foto (URL)']}" class="w-full h-52 object-cover rounded-2xl mb-4 shadow-sm" loading="lazy">
-        <h3 class="font-bold text-lg text-gray-900 leading-tight">${d.Nama}</h3>
-        <p class="text-blue-600 text-sm font-semibold mb-3">Angkatan ${d.Angkatan}</p>
-        <div class="pt-4 border-t border-gray-100">
-            <p class="text-gray-500 text-xs uppercase tracking-widest font-bold">${d.Pekerjaan || 'Alumni'}</p>
-        </div>
-    </div>`;
-}
+// RENDER TEMPLATES
+function renderAlumni(d) { return `<div class="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition"><img src="${d['Foto (URL)']}" class="w-full h-52 object-cover rounded-2xl mb-4"><h3 class="font-bold text-gray-900">${d.Nama}</h3><p class="text-blue-600 text-sm font-semibold">Angkatan ${d.Angkatan}</p><p class="text-gray-500 text-xs mt-2">${d.Pekerjaan || ''}</p></div>`; }
+function renderLoker(d) { return `<div class="bg-white p-8 rounded-3xl border border-blue-50 shadow-sm hover:border-blue-200 transition"><h3 class="font-bold text-xl text-gray-900">${d.Posisi}</h3><p class="text-blue-600 font-medium mb-6">${d.Perusahaan}</p><a href="${d.Link}" target="_blank" class="block w-full text-center bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">Lamar Sekarang</a></div>`; }
+function renderBerita(d) { return `<div class="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm"><img src="${d.LinkGambar}" class="w-full h-44 object-cover"><div class="p-6"><p class="text-xs text-gray-400 font-medium mb-2">${d.Tanggal}</p><h3 class="font-bold text-gray-900 mb-3">${d.Judul}</h3><p class="text-gray-600 text-sm leading-relaxed">${d.Ringkasan}</p></div></div>`; }
+function renderEtalase(d) { return `<div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm text-center"><img src="${d.FotoProduk}" class="w-24 h-24 mx-auto rounded-full object-cover mb-4 ring-4 ring-gray-50"><h3 class="font-bold text-gray-900">${d.NamaBisnis}</h3><p class="text-gray-500 text-xs mb-6">${d.Produk}</p><a href="https://wa.me/${d.WhatsApp}" target="_blank" class="inline-block w-full bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition">Pesan via WA</a></div>`; }
 
-// Template lain (Loker, Berita, Etalase) tetap sama seperti sebelumnya namun dengan class CSS modern.
-function renderLoker(d) { return `<div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all"><h3 class="font-bold text-xl text-gray-800">${d.Posisi}</h3><p class="text-blue-600 font-medium mb-6">${d.Perusahaan}</p><a href="${d.Link}" target="_blank" class="block w-full text-center bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">Lamar Pekerjaan</a></div>`; }
-
-function loadNewsHighlight() {
-    // Implementasi fetch berita singkat untuk landing page
-    // (Gunakan kode fetch berita sebelumnya di sini)
-}
-
-// Start
+// Inisialisasi
 window.addEventListener('DOMContentLoaded', showHome);
